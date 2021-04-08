@@ -4,7 +4,7 @@ from api.models import User
 from api.serializers import UserSerializer
 
 
-class CompanyViewSet(ModelViewSet):
+class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     http_method_names = ['get', 'post', 'patch', 'delete', 'head']
