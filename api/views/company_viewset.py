@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import Company
-from api.serializers import CompanySerializer
+from api.serializers import CompanySerializer, CompanyDetailSerializer
 
 
 class CompanyViewSet(ModelViewSet):
@@ -26,3 +26,8 @@ class CompanyViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        if self.action != 'retrieve':
+            return CompanySerializer
+        return CompanyDetailSerializer

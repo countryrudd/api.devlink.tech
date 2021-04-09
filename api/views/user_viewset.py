@@ -1,7 +1,9 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import User
 from api.serializers import UserSerializer
+from api.serializers.user_serializers import UserDetailSerializer
 
 
 class UserViewSet(ModelViewSet):
@@ -26,3 +28,20 @@ class UserViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if is_developer := self.request.query_params.get('is_developer'):
+            if is_developer == 'true':
+                return queryset.filter(is_developer=True)
+            if is_developer == 'false':
+                return queryset.filter(is_developer=False)
+            raise ValidationError({'is_developer': "This field must be 'true' or 'false'."})
+
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action != 'retrieve':
+            return UserSerializer
+        return UserDetailSerializer
