@@ -2,7 +2,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Q
 
-from api.models.base_model import BaseModel
+from .base_model import BaseModel
 
 
 class User(BaseModel):
@@ -16,6 +16,7 @@ class User(BaseModel):
     avatar_url = models.URLField(blank=True, default='')
     languages = ArrayField(base_field=models.TextField())
     skills = ArrayField(base_field=models.TextField())
+    companies = models.ManyToManyField('Company', through='CompanyUserPermissions')
 
     class Meta:
         constraints = [

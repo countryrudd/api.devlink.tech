@@ -12,10 +12,10 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class CompanyDetailSerializer(serializers.ModelSerializer):
     from .job_serializers import JobSerializer
-    from .company_user_serializers import CompanyUserSerializer
+    from .company_user_permissions_serializers import CompanyUserPermissionsSerializer
 
     jobs = JobSerializer(many=True, read_only=True)
-    employees = CompanyUserSerializer(many=True, read_only=True)
+    employees = CompanyUserPermissionsSerializer(many=True, read_only=True, source='company_user_permissions')
 
     class Meta:
         model = Company

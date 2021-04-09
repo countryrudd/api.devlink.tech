@@ -14,10 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     from .company_serializers import CompanySerializer
 
-    company = CompanySerializer(read_only=True)
+    companies = CompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = User
         fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_id', 'github_username', 'is_developer',
-                  'location', 'avatar_url', 'languages', 'skills', 'company']
-        read_only_fields = ['id', 'created', 'company']
+                  'location', 'avatar_url', 'languages', 'skills', 'companies']
+        read_only_fields = ['id', 'created', 'companies']
