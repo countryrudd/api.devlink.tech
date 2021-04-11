@@ -8,4 +8,3 @@ class Company(BaseModel):
     location = models.TextField()
     slogan = models.TextField(blank=True, default='')
     logo_url = models.URLField(blank=True, default='')
-    users = models.ManyToManyField('User', through='CompanyUserPermissions')

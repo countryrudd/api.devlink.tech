@@ -2,8 +2,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import User
-from api.serializers import UserSerializer
-from api.serializers.user_serializers import UserDetailSerializer
+from api.serializers import UserSerializer, UserDetailSerializer
 
 
 class UserViewSet(ModelViewSet):

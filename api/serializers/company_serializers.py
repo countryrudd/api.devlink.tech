@@ -12,12 +12,12 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class CompanyDetailSerializer(serializers.ModelSerializer):
     from .job_serializers import JobSerializer
-    from .company_user_permissions_serializers import CompanyUserPermissionsSerializer
+    from .company_position_serializers import CompanyPositionSerializer
 
     jobs = JobSerializer(many=True, read_only=True)
-    employees = CompanyUserPermissionsSerializer(many=True, read_only=True, source='company_user_permissions')
+    employees = CompanyPositionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Company
-        fields = ['id', 'created', 'name', 'location', 'slogan', 'logo_url', 'jobs', 'employees']
-        read_only_fields = ['id', 'created', 'jobs', 'employees']
+        fields = ['id', 'created', 'name', 'location', 'slogan', 'logo_url', 'jobs', 'positions']
+        read_only_fields = ['id', 'created', 'jobs', 'positions']
