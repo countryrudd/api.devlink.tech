@@ -8,5 +8,5 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ['id', 'created', 'company_id', 'title', 'is_active', 'location', 'description', 'skills', 'culture', 'company_name']
-        read_only_fields = ['id', 'created', 'company_id']
+        fields = ['id', 'created', 'company_id', 'title', 'is_active', 'location', 'description', 'languages', 'skills', 'cultures', 'company_name']
+        read_only_fields = ['id', 'created', 'company_id', 'company_name']

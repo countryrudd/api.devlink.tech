@@ -41,9 +41,9 @@ class JobViewSet(ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        if self.action != 'retrieve':
-            return JobSerializer
-        return JobDetailSerializer
+        #if self.action != 'retrieve':
+        return JobSerializer
+        #return JobDetailSerializer
 
 
 # class JobDetailSerializer(serializers.ModelSerializer):
