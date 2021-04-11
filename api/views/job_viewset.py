@@ -36,7 +36,7 @@ class JobViewSet(ModelViewSet):
                 return queryset.filter(is_active=True)
             if is_active == 'false':
                 return queryset.filter(is_active=False)
-            raise ValidationError({'is_developer': "This field must be 'true' or 'false'."})
+            raise ValidationError({'is_active': "This field must be 'true' or 'false'."})
 
         return queryset
 
