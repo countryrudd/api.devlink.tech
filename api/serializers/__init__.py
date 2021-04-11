@@ -1,4 +1,4 @@
 from .company_serializers import CompanySerializer, CompanyDetailSerializer
-from .company_position_serializers import CompanyPositionSerializer
+from .company_position_serializers import CompanyPositionCompanySerializer, CompanyPositionUserSerializer
 from .job_serializers import JobSerializer
 from .user_serializers import UserSerializer, UserDetailSerializer
