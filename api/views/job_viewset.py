@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import Job
@@ -26,3 +27,24 @@ class JobViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if is_active := self.request.query_params.get('is_active'):
+            if is_active == 'true':
+                return queryset.filter(is_active=True)
+            if is_active == 'false':
+                return queryset.filter(is_active=False)
+            raise ValidationError({'is_active': "This field must be 'true' or 'false'."})
+
+        return queryset
+
+    def get_serializer_class(self):
+        #if self.action != 'retrieve':
+        return JobSerializer
+        #return JobDetailSerializer
+
+
+# class JobDetailSerializer(serializers.ModelSerializer):
+    # future implementation of JobDetailSerializer
