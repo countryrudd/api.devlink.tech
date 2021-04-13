@@ -16,7 +16,7 @@ class User(BaseModel):
     avatar_url = models.URLField(blank=True, default='')
     languages = ArrayField(base_field=models.TextField())
     skills = ArrayField(base_field=models.TextField())
-    companies = models.ManyToManyField('Company', through='CompanyUserPermissions')
+    bio = models.TextField(blank=True, default='')
 
     class Meta:
         constraints = [

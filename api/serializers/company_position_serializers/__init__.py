@@ -1,0 +1,2 @@
+from .company_position_company_serializer import CompanyPositionCompanySerializer
+from .company_position_user_serializer import CompanyPositionUserSerializer
