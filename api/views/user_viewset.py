@@ -1,3 +1,7 @@
+import operator
+from functools import reduce
+
+from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 
@@ -33,10 +37,32 @@ class UserViewSet(ModelViewSet):
 
         if is_developer := self.request.query_params.get('is_developer'):
             if is_developer == 'true':
-                return queryset.filter(is_developer=True)
-            if is_developer == 'false':
-                return queryset.filter(is_developer=False)
-            raise ValidationError({'is_developer': "This field must be 'true' or 'false'."})
+                queryset = queryset.filter(is_developer=True)
+            elif is_developer == 'false':
+                queryset = queryset.filter(is_developer=False)
+            else:
+                raise ValidationError({'is_developer': "This field must be 'true' or 'false'."})
+
+        filter_kwargs = {}
+
+        if search := self.request.query_params.get('search'):
+            filter_kwargs['name__icontains'] = search
+            filter_kwargs['email__icontains'] = search
+
+            if is_developer:
+                filter_kwargs['github_username__icontains'] = search
+
+        if languages := self.request.query_params.getlist('language'):
+            filter_kwargs['languages__overlap'] = languages
+
+        if skills := self.request.query_params.getlist('skill'):
+            filter_kwargs['skills__overlap'] = skills
+
+        if locations := self.request.query_params.getlist('location'):
+            filter_kwargs['location__in'] = locations
+
+        if filter_kwargs:
+            return queryset.filter(reduce(operator.or_, [Q(**{key: filter_kwargs[key]}) for key in filter_kwargs]))
 
         return queryset
 
