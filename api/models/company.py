@@ -8,3 +8,4 @@ class Company(BaseModel):
     location = models.TextField()
     slogan = models.TextField(blank=True, default='')
     logo_url = models.URLField(blank=True, default='')
+    email = models.EmailField(blank=True, default='')

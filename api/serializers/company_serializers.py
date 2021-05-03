@@ -6,7 +6,7 @@ from api.models import Company
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = ['id', 'created', 'name', 'location', 'slogan', 'logo_url']
+        fields = ['id', 'created', 'name', 'location', 'slogan', 'logo_url', 'email']
         read_only_fields = ['id', 'created']
 
 
@@ -19,5 +19,5 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ['id', 'created', 'name', 'location', 'slogan', 'logo_url', 'jobs', 'positions']
+        fields = ['id', 'created', 'name', 'location', 'slogan', 'logo_url', 'email', 'jobs', 'positions']
         read_only_fields = ['id', 'created', 'jobs', 'positions']
