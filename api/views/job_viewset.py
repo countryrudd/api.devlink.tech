@@ -1,3 +1,7 @@
+import operator
+from functools import reduce
+
+from django.db.models import Q
 from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 
@@ -33,10 +37,31 @@ class JobViewSet(ModelViewSet):
 
         if is_active := self.request.query_params.get('is_active'):
             if is_active == 'true':
-                return queryset.filter(is_active=True)
-            if is_active == 'false':
-                return queryset.filter(is_active=False)
-            raise ValidationError({'is_active': "This field must be 'true' or 'false'."})
+                queryset = queryset.filter(is_active=True)
+            elif is_active == 'false':
+                queryset = queryset.filter(is_active=False)
+            else:
+                raise ValidationError({'is_active': "This field must be 'true' or 'false'."})
+
+        filter_kwargs = {}
+
+        if search := self.request.query_params.get('search'):
+            filter_kwargs['title__icontains'] = search
+
+        if languages := self.request.query_params.getlist('language'):
+            filter_kwargs['languages__overlap'] = languages
+
+        if skills := self.request.query_params.getlist('skill'):
+            filter_kwargs['skills__overlap'] = skills
+
+        if locations := self.request.query_params.getlist('location'):
+            filter_kwargs['location__in'] = locations
+
+        if cultures := self.request.query_params.getlist('culture'):
+            filter_kwargs['cultures__overlap'] = cultures
+
+        if filter_kwargs:
+            return queryset.filter(reduce(operator.or_, [Q(**{key: filter_kwargs[key]}) for key in filter_kwargs]))
 
         return queryset
 
