@@ -32,6 +32,11 @@ class UserViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+    def get_object(self):
+        if self.kwargs.get(self.lookup_url_kwarg or self.lookup_field) == 'current':
+            self.kwargs[self.lookup_field] = self.request.user.id
+        return super().get_object()
+
     def get_queryset(self):
         queryset = super().get_queryset()
 
@@ -44,6 +49,12 @@ class UserViewSet(ModelViewSet):
                 raise ValidationError({'is_developer': "This field must be 'true' or 'false'."})
 
         filter_kwargs = {}
+
+        if linkedin_username := self.request.query_params.get('linkedin_username'):
+            filter_kwargs['linkedin_username__exact'] = linkedin_username
+
+        if github_username := self.request.query_params.get('github_username'):
+            filter_kwargs['github_username__exact'] = github_username
 
         if search := self.request.query_params.get('search'):
             filter_kwargs['name__icontains'] = search
