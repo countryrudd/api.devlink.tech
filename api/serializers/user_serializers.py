@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     from .company_position_serializers.company_position_company_serializer import CompanyPositionCompanySerializer
 
-    positions = CompanyPositionCompanySerializer(read_only=True)
+    positions = CompanyPositionCompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = User

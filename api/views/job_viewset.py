@@ -48,9 +48,6 @@ class JobViewSet(ModelViewSet):
         if search := self.request.query_params.get('search'):
             filter_kwargs['title__icontains'] = search
 
-            # if is_active:
-            #     filter_kwargs['github_username__icontains'] = search
-
         if languages := self.request.query_params.getlist('language'):
             filter_kwargs['languages__overlap'] = languages
 
