@@ -2,7 +2,7 @@ import operator
 from functools import reduce
 
 from django.db.models import Q
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import User
@@ -21,20 +21,29 @@ class UserViewSet(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        return PermissionDenied()
 
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        if request.user == self.get_object():
+            return super().update(request, *args, **kwargs)
+        return PermissionDenied()
 
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        if request.user == self.get_object():
+            return super().partial_update(request, *args, **kwargs)
+        return PermissionDenied()
 
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        if request.user == self.get_object():
+            return super().destroy(request, *args, **kwargs)
+        return PermissionDenied()
 
     def get_object(self):
         if self.kwargs.get(self.lookup_url_kwarg or self.lookup_field) == 'current':
-            self.kwargs[self.lookup_field] = self.request.user.id
+            if self.request.user is not None and isinstance(self.request.user, User):
+                self.kwargs[self.lookup_field] = self.request.user.id
+            else:
+                raise PermissionDenied()
         return super().get_object()
 
     def get_queryset(self):
