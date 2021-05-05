@@ -1,6 +1,7 @@
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.viewsets import ModelViewSet
 
-from api.models import Company
+from api.models import Company, CompanyPosition
 from api.serializers import CompanySerializer, CompanyDetailSerializer
 
 
@@ -19,13 +20,28 @@ class CompanyViewSet(ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        if request.user:
+            company = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=company, user=request.user).first():
+                if company_position.can_edit:
+                    return super().update(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        if request.user:
+            company = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=company, user=request.user).first():
+                if company_position.can_edit:
+                    return super().partial_update(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        if request.user:
+            company = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=company, user=request.user).first():
+                if company_position.is_admin:
+                    return super().destroy(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def get_serializer_class(self):
         if self.action != 'retrieve':

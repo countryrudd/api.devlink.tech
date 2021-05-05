@@ -2,10 +2,10 @@ import operator
 from functools import reduce
 
 from django.db.models import Q
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.viewsets import ModelViewSet
 
-from api.models import Job
+from api.models import Job, CompanyPosition
 from api.serializers import JobSerializer
 
 
@@ -21,16 +21,36 @@ class JobViewSet(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        # TODO: Verify that the User creating the Job has the correct permission in that Job's Company.
+        if request.user:
+            if company_position := CompanyPosition.objects.filter(user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().create(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        if request.user:
+            job = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=job.company, user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().update(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        if request.user:
+            job = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=job.company, user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().partial_update(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        if request.user:
+            job = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=job.company, user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().destroy(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def get_queryset(self):
         queryset = super().get_queryset()

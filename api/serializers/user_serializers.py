@@ -6,8 +6,8 @@ from api.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_id', 'github_username', 'is_developer',
-                  'location', 'avatar_url', 'languages', 'skills', 'bio']
+        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_username', 'github_username', 'is_developer',
+                  'location', 'avatar_url', 'languages', 'skills', 'bio', 'finished_registration']
         read_only_fields = ['id', 'created']
 
 
@@ -18,6 +18,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_id', 'github_username', 'is_developer',
-                  'location', 'avatar_url', 'languages', 'skills', 'bio', 'positions']
+        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_username', 'github_username', 'is_developer',
+                  'location', 'avatar_url', 'languages', 'skills', 'bio', 'positions', 'finished_registration']
         read_only_fields = ['id', 'created', 'positions']
