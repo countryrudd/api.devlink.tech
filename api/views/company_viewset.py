@@ -38,10 +38,6 @@ class CompanyViewSet(ModelViewSet):
             company = self.get_object()
             if company_position := CompanyPosition.objects.filter(company=company, user=request.user).first():
                 if company_position.can_edit:
-                    for job in company_position.company.jobs.all():
-                        job.delete()
-                    for position in company_position.company.positions.all():
-                        position.delete()
                     return super().partial_update(request, *args, **kwargs)
         raise PermissionDenied()
 
@@ -50,6 +46,10 @@ class CompanyViewSet(ModelViewSet):
             company = self.get_object()
             if company_position := CompanyPosition.objects.filter(company=company, user=request.user).first():
                 if company_position.is_admin:
+                    for job in company_position.company.jobs.all():
+                        job.delete()
+                    for position in company_position.company.positions.all():
+                        position.delete()
                     return super().destroy(request, *args, **kwargs)
         raise PermissionDenied()
 
