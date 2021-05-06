@@ -1,5 +1,7 @@
 from django.db import transaction
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.models import Company, CompanyPosition
@@ -53,3 +55,19 @@ class CompanyViewSet(ModelViewSet):
         if self.action != 'retrieve':
             return CompanySerializer
         return CompanyDetailSerializer
+
+    @action(detail=True, methods=['POST'])
+    @transaction.atomic
+    def create_position(self, request, *args, **kwargs):
+        from api.serializers.company_position_serializers.company_position_serializer import CompanyPositionSerializer
+
+        if not request.user.positions.filter(company=self.get_object()).first():
+            serializer = CompanyPositionSerializer(data={
+                **request.data,
+                'user_id': str(request.user.id),
+                'company_id': str(self.get_object().pk)
+            })
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        raise PermissionDenied()
