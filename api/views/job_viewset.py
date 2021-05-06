@@ -1,6 +1,11 @@
+import operator
+from functools import reduce
+
+from django.db.models import Q
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.viewsets import ModelViewSet
 
-from api.models import Job
+from api.models import Job, CompanyPosition
 from api.serializers import JobSerializer
 
 
@@ -16,13 +21,69 @@ class JobViewSet(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        # TODO: Verify that the User creating the Job has the correct permission in that Job's Company.
+        if request.user:
+            if company_position := CompanyPosition.objects.filter(user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().create(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        if request.user:
+            job = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=job.company, user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().update(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
+        if request.user:
+            job = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=job.company, user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().partial_update(request, *args, **kwargs)
+        raise PermissionDenied()
 
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        if request.user:
+            job = self.get_object()
+            if company_position := CompanyPosition.objects.filter(company=job.company, user=request.user).first():
+                if company_position.can_create_jobs:
+                    return super().destroy(request, *args, **kwargs)
+        raise PermissionDenied()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if is_active := self.request.query_params.get('is_active'):
+            if is_active == 'true':
+                queryset = queryset.filter(is_active=True)
+            elif is_active == 'false':
+                queryset = queryset.filter(is_active=False)
+            else:
+                raise ValidationError({'is_active': "This field must be 'true' or 'false'."})
+
+        filter_kwargs = {}
+
+        if search := self.request.query_params.get('search'):
+            filter_kwargs['title__icontains'] = search
+
+        if languages := self.request.query_params.getlist('language'):
+            filter_kwargs['languages__overlap'] = languages
+
+        if skills := self.request.query_params.getlist('skill'):
+            filter_kwargs['skills__overlap'] = skills
+
+        if locations := self.request.query_params.getlist('location'):
+            filter_kwargs['location__in'] = locations
+
+        if cultures := self.request.query_params.getlist('culture'):
+            filter_kwargs['cultures__overlap'] = cultures
+
+        if filter_kwargs:
+            return queryset.filter(reduce(operator.or_, [Q(**{key: filter_kwargs[key]}) for key in filter_kwargs]))
+
+        return queryset
+
+    def get_serializer_class(self):
+        return JobSerializer

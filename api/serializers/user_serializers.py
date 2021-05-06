@@ -6,18 +6,18 @@ from api.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_id', 'github_username', 'is_developer',
-                  'location', 'avatar_url', 'languages', 'skills']
+        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_username', 'github_username', 'is_developer',
+                  'location', 'avatar_url', 'languages', 'skills', 'bio', 'finished_registration']
         read_only_fields = ['id', 'created']
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    from .company_serializers import CompanySerializer
+    from .company_position_serializers.company_position_company_serializer import CompanyPositionCompanySerializer
 
-    companies = CompanySerializer(many=True, read_only=True)
+    positions = CompanyPositionCompanySerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_id', 'github_username', 'is_developer',
-                  'location', 'avatar_url', 'languages', 'skills', 'companies']
-        read_only_fields = ['id', 'created', 'companies']
+        fields = ['id', 'created', 'name', 'email', 'auth0_id', 'linkedin_username', 'github_username', 'is_developer',
+                  'location', 'avatar_url', 'languages', 'skills', 'bio', 'positions', 'finished_registration']
+        read_only_fields = ['id', 'created', 'positions']
