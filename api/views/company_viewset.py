@@ -32,7 +32,6 @@ class CompanyViewSet(ModelViewSet):
                     return super().update(request, *args, **kwargs)
         raise PermissionDenied()
 
-    @transaction.atomic()
     def partial_update(self, request, *args, **kwargs):
         if request.user:
             company = self.get_object()
@@ -41,6 +40,7 @@ class CompanyViewSet(ModelViewSet):
                     return super().partial_update(request, *args, **kwargs)
         raise PermissionDenied()
 
+    @transaction.atomic()
     def destroy(self, request, *args, **kwargs):
         if request.user:
             company = self.get_object()
