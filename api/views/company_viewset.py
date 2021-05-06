@@ -1,4 +1,8 @@
+import operator
+from functools import reduce
+
 from django.db import transaction
+from django.db.models import Q
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.viewsets import ModelViewSet
 
@@ -48,6 +52,22 @@ class CompanyViewSet(ModelViewSet):
                 if company_position.is_admin:
                     return super().destroy(request, *args, **kwargs)
         raise PermissionDenied()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        filter_kwargs = {}
+
+        if search := self.request.query_params.get('search'):
+            filter_kwargs['name__icontains'] = search
+
+        if locations := self.request.query_params.getlist('location'):
+            filter_kwargs['location__in'] = locations
+
+        if filter_kwargs:
+            return queryset.filter(reduce(operator.or_, [Q(**{key: filter_kwargs[key]}) for key in filter_kwargs]))
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action != 'retrieve':
