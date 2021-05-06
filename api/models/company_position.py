@@ -10,6 +10,7 @@ class CompanyPosition(BaseModel):
     description = models.TextField(blank=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
+    activated = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     can_edit = models.BooleanField(default=False)
     can_create_jobs = models.BooleanField(default=False)

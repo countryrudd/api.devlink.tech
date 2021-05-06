@@ -29,6 +29,7 @@ class CompanySerializer(serializers.ModelSerializer):
             description=created_by_position_description,
             start_date=created_by_position_start_date,
             end_date=None,
+            activated=True,
             is_admin=True,
             can_edit=True,
             can_create_jobs=True,

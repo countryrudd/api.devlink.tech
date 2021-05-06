@@ -5,6 +5,7 @@ from api import views
 
 router = SimpleRouter()
 
+router.register(r'company_positions', views.CompanyPositionViewSet)
 router.register(r'companies', views.CompanyViewSet)
 router.register(r'jobs', views.JobViewSet)
 router.register(r'users', views.UserViewSet)

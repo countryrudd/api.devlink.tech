@@ -11,5 +11,5 @@ class CompanyPositionUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyPosition
         fields = ['id', 'created', 'user', 'company_id', 'is_admin', 'can_edit', 'can_create_jobs', 'title',
-                  'description', 'start_date', 'end_date']
+                  'description', 'start_date', 'end_date', 'activated']
         read_only_fields = ['id', 'created', 'user', 'company_id']
