@@ -35,6 +35,14 @@ class UserViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         if request.user == self.get_object():
+            for position in request.user.positions.all():
+                # If the user being deleted is the company admin, delete the company.
+                if position.is_admin:
+                    for company_job in position.company.jobs.all():
+                        company_job.delete()
+                    for company_position in position.company.positions.all():
+                        company_position.delete()
+                    position.company.delete()
             return super().destroy(request, *args, **kwargs)
         return PermissionDenied()
 
