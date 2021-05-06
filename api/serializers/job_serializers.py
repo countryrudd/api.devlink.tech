@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from api.models import Job
+from api.models import Job, Company
 
 
 class JobSerializer(serializers.ModelSerializer):
-    company_id = serializers.CharField(read_only=True, source='company.id')
+    company_id = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all(), source='company')
     company_name = serializers.CharField(read_only=True, source='company.name')
     company_slogan = serializers.CharField(read_only=True, source='company.slogan')
     company_location = serializers.CharField(read_only=True, source='company.location')
@@ -15,5 +15,5 @@ class JobSerializer(serializers.ModelSerializer):
         model = Job
         fields = ['id', 'created', 'company_id', 'title', 'is_active', 'location', 'description', 'languages', 'skills',
                   'cultures', 'company_name', 'company_slogan', 'company_location', 'logo_url', 'email']
-        read_only_fields = ['id', 'created', 'company_id', 'company_name', 'company_slogan', 'company_location',
+        read_only_fields = ['id', 'created', 'company_name', 'company_slogan', 'company_location',
                             'logo_url', 'email']
