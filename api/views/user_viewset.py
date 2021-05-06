@@ -1,6 +1,7 @@
 import operator
 from functools import reduce
 
+from django.db import transaction
 from django.db.models import Q
 from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.viewsets import ModelViewSet
@@ -33,6 +34,7 @@ class UserViewSet(ModelViewSet):
             return super().partial_update(request, *args, **kwargs)
         return PermissionDenied()
 
+    @transaction.atomic()
     def destroy(self, request, *args, **kwargs):
         if request.user == self.get_object():
             for position in request.user.positions.all():
