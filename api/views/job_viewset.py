@@ -21,9 +21,10 @@ class JobViewSet(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        # TODO: Verify that the User creating the Job has the correct permission in that Job's Company.
         if request.user:
-            if company_position := CompanyPosition.objects.filter(user=request.user).first():
+            if not (company_id := request.data['company_id']):
+                raise ValidationError({'company_id': 'This field is required.'})
+            if company_position := CompanyPosition.objects.filter(user=request.user, company_id=company_id).first():
                 if company_position.can_create_jobs:
                     return super().create(request, *args, **kwargs)
         raise PermissionDenied()
