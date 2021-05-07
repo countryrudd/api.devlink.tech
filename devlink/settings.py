@@ -8,6 +8,8 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=True)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 CORS_ORIGIN_WHITELIST = config('CORS_ORIGIN_WHITELIST', cast=Csv())
+REQUESTS_TIMEOUT = int(config('REQUESTS_TIMEOUT'))
+GITHUB_API_KEY = config('GITHUB_API_KEY')
 
 INSTALLED_APPS = [
     'django.contrib.auth',
